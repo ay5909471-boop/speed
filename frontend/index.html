@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0a0a0f">
+    <title>X Console</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- شاشة تسجيل الدخول -->
+    <div id="loginScreen" class="login-wrap">
+        <div class="login-card">
+            <div class="login-brand"><span class="login-brand-mark">X</span><span>CONSOLE <i>TOOLS</i></span></div>
+            <div class="lock-icon" aria-hidden="true">✦</div>
+            <div class="login-kicker">مساحة التحكم الخاصة بك</div>
+            <h1>X Tools Dashboard</h1>
+            <p>سجّل الدخول بحساب Discord للوصول إلى لوحة التحكم. تجربة آمنة وسريعة تبدأ من هنا.</p>
+            
+            <p id="loginError" class="login-error" role="alert" aria-live="polite" hidden></p>
+            <a href="http://127.0.0.1:8000/api/auth/discord" class="discord-btn-login">
+                <svg viewBox="0 0 127.14 96.36" aria-hidden="true"><path fill="currentColor" d="M107.7 8.07A105.15 105.15 0 0 0 81.8 0a72.06 72.06 0 0 0-3.3 6.83 97.68 97.68 0 0 0-29.35 0A72.37 72.37 0 0 0 45.85 0a105.89 105.89 0 0 0-25.92 8.09C3.5 32.27-.94 55.85 1.28 79.1a106.3 106.3 0 0 0 31.8 16.1 77.7 77.7 0 0 0 6.82-11.05 69.7 69.7 0 0 1-10.74-5.13c.9-.65 1.78-1.32 2.63-2.01 20.72 9.72 43.2 9.72 63.68 0 .86.69 1.74 1.36 2.63 2.01a69.4 69.4 0 0 1-10.76 5.14 77 77 0 0 0 6.82 11.04 106.1 106.1 0 0 0 31.82-16.1c2.6-26.96-4.46-50.32-18.28-71.03ZM42.4 65.8c-6.2 0-11.3-5.7-11.3-12.7s4.98-12.72 11.3-12.72 11.4 5.76 11.3 12.72c0 7-4.99 12.7-11.3 12.7Zm42.34 0c-6.2 0-11.3-5.7-11.3-12.7s4.98-12.72 11.3-12.72 11.4 5.76 11.3 12.72c0 7-4.98 12.7-11.3 12.7Z"/></svg>
+                <span>المتابعة باستخدام Discord</span><span class="login-arrow">←</span>
+            </a>
+            
+            <hr>
+            <p class="footer-text"><span class="secure-dot"></span> تسجيل الدخول محمي عبر Discord OAuth</p>
+        </div>
+    </div>
+
+    <!-- شاشة التطبيق -->
+    <div id="appScreen" class="app hidden">
+        <header class="topbar">
+            <div class="brand">X</div>
+            <nav id="nav"></nav>
+            
+            <div class="user-menu-container">
+                <button id="header-avatar-button" class="header-avatar-button" type="button" onclick="openProfileModal()" aria-label="عرض الملف الشخصي" aria-haspopup="dialog" aria-controls="profileModalContainer">
+                    <img id="header-avatar" src="https://cdn.discordapp.com/embed/avatars/0.png" class="header-avatar" alt="الصورة الشخصية">
+                    <span class="avatar-online-dot" title="حالة Discord غير متاحة" aria-label="حالة Discord غير متاحة"></span>
+                </button>
+            </div>
+
+            <a class="discord-btn" href="https://discord.gg/hN3XVhKm9" target="_blank" rel="noopener noreferrer">◉ JOIN DISCORD</a>
+        </header>
+        <main id="views"></main>
+    </div>
+
+    <!-- Modal Container -->
+    <div id="profileModalContainer" aria-live="polite"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
