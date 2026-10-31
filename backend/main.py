@@ -15,14 +15,21 @@ BACKEND_DIR = Path(__file__).resolve().parent
 load_dotenv(BACKEND_DIR / ".env")
 
 # ==============================================================
-# 1. بيانات تطبيق ديسكورد بتاعك
+# 1. بيانات تطبيق ديسكورد بتاعك (هتتغير في Render)
 # ==============================================================
 DISCORD_CLIENT_ID = os.getenv("DISCORD_CLIENT_ID", "").strip()
 DISCORD_CLIENT_SECRET = os.getenv("DISCORD_CLIENT_SECRET", "").strip()
-DISCORD_REDIRECT_URI = os.getenv("DISCORD_REDIRECT_URI", "http://127.0.0.1:8000/api/auth/callback").strip()
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://127.0.0.1:5500").rstrip("/")
+DISCORD_REDIRECT_URI = os.getenv("DISCORD_REDIRECT_URI", "https://YOUR_RENDER_LINK/api/auth/callback").strip()
+FRONTEND_URL = os.getenv("FRONTEND_URL", "https://x-console-tools-frontend-6cvn.vercel.app").rstrip("/")
 WEBHOOK_URL = os.getenv("WEBHOOK_URL", "").strip()
 
+# إعدادات الكوكيز للسيرفر (HTTPS)
+IS_SECURE = FRONTEND_URL.startswith("https://")
+COOKIE_SAMESITE = "none" if IS_SECURE else "lax"
+
+# ==============================================================
+# 2. تقديم الملفات (مش مهم في Render بس بنسيبه)
+# ==============================================================
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FRONTEND_DIR = os.path.join(BASE_DIR, "frontend")
 if os.path.exists(FRONTEND_DIR):
@@ -58,7 +65,7 @@ def send_webhook_log(title: str, fields: List[dict] = None, color: int = 0xff444
 def startup_event():
     send_webhook_log("🟢 Server Online", fields=[{"name": "Status:", "value": "🟢 **Online**"}], color=0x00ff00)
 
-app.add_middleware(CORSMiddleware, allow_origins=[FRONTEND_URL], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 JOBS: Dict[str, dict] = {}
 
 # ==============================================================
@@ -70,7 +77,7 @@ def auth_discord():
     state = secrets.token_urlsafe(32)
     authorize_params = urlencode({"client_id": DISCORD_CLIENT_ID, "redirect_uri": DISCORD_REDIRECT_URI, "response_type": "code", "scope": "identify", "state": state})
     response = RedirectResponse("https://discord.com/oauth2/authorize?" + authorize_params, status_code=302)
-    response.set_cookie("x_oauth_state", state, max_age=600, httponly=True, secure=FRONTEND_URL.startswith("https://"), samesite="lax", path="/")
+    response.set_cookie("x_oauth_state", state, max_age=600, httponly=True, secure=IS_SECURE, samesite=COOKIE_SAMESITE, path="/")
     return response
 
 @app.get("/api/auth/callback")
@@ -97,7 +104,8 @@ async def auth_callback(code: str, state: str, request: Request):
     }
     response = RedirectResponse(url=FRONTEND_URL + "/", status_code=303)
     response.delete_cookie("x_oauth_state", path="/")
-    response.set_cookie("x_session", session_id, max_age=60 * 60 * 24 * 7, httponly=True, secure=FRONTEND_URL.startswith("https://"), samesite="lax", path="/")
+    # هنا تم استخدام secure و samesite عشان يشتغل على Vercel و Render
+    response.set_cookie("x_session", session_id, max_age=60 * 60 * 24 * 7, httponly=True, secure=IS_SECURE, samesite=COOKIE_SAMESITE, path="/")
     return response
 
 def require_session(request: Request):
